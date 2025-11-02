@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS app_users
+(
+    ID_user INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    login   VARCHAR(256),
+    name    VARCHAR(256),
+    surname VARCHAR(256)
+);

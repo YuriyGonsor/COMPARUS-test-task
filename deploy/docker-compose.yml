@@ -1,0 +1,78 @@
+name: user-app-full-build
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpass
+      POSTGRES_DB: test
+    volumes:
+      - ./postgre:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U testuser -d test"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  mysql:
+    image: mysql:8.4
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mysql_db
+      MYSQL_USER: testuser
+      MYSQL_PASSWORD: 123456
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -proot --silent || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  mariadb:
+    image: mariadb:11.8.3
+    container_name: mariadb
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpass
+      MARIADB_DATABASE: mariadb_db
+      MARIADB_USER: useruser
+      MARIADB_PASSWORD: passpass
+    volumes:
+      - ./mariadb:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: [ "CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -uroot -prootpass --silent && mariadb -h 127.0.0.1 -u useruser -ppasspass -D mariadb_db -e 'SELECT 1' >/dev/null" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  user-app:
+    container_name: user-app
+    image: user-app:latest
+    build:
+      context: ..
+      dockerfile: deploy/userappDockerfile
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      mariadb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELLv", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+

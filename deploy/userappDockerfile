@@ -1,0 +1,20 @@
+# ===== build stage =====
+FROM gradle:8.10.2-jdk21 AS build
+WORKDIR /workspace
+
+# Кешуємо залежності Gradle (стабільні шари)
+COPY settings.gradle* build.gradle* gradle.properties* ./
+COPY gradle gradle
+RUN --mount=type=cache,target=/root/.gradle gradle --no-daemon -q help
+
+# Код — інвалідить кеш лише при змінах у проєкті
+COPY . .
+RUN --mount=type=cache,target=/root/.gradle gradle --no-daemon -x test bootJar
+
+# ===== runtime =====
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
+COPY --from=build /workspace/build/libs/*.jar app.jar
+EXPOSE 8080 5005
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app/app.jar"]

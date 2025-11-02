@@ -1,0 +1,68 @@
+spring:
+  application:
+    name: user-app
+  autoconfigure:
+    exclude:
+    - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+    - org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
+    - org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    display-request-duration: true
+
+userapp:
+  data-sources:
+    - name: 'postgres-db'
+      strategy: 'postgres'
+      url: 'jdbc:postgresql://postgres:5432/test'
+      table: 'users'
+      user: 'testuser'
+      password: 'testpass'
+      mapping:
+        id: 'user_id'
+        username: 'username'
+        name: 'first_name'
+        surname: 'last_name'
+    - name: 'mariaDb-db'
+      strategy: 'mariaDB'
+      url: 'jdbc:mariadb://mariadb:3306/mariadb_db'
+      table: 'user_table'
+      user: 'root'
+      password: 'rootpass'
+      mapping:
+        id: 'ldap_login'
+        username: 'ldap_login'
+        name: 'name'
+        surname: 'surname'
+    - name: 'mysql-DB'
+      strategy: 'mysql'
+      url: 'jdbc:mysql://mysql:3306/mysql_db'
+      table: 'app_users'
+      user: 'testuser'
+      password: '123456'
+      mapping:
+        id: 'ID_user'
+        username: 'login'
+        name: 'name'
+        surname: 'surname'
+    - name: 'oracleDB'
+      strategy: 'oracle'
+      url: 'jdbc:oracle:thin:@oracleDb:1521/XEPDB1'
+      table: 'MY_USERS'
+      user: 'APPUSER'
+      password: 'AppPass123'
+      mapping:
+        id: 'USER_ID'
+        username: 'USER_NAME'
+        name: 'NAME'
+        surname: 'LASTNAME'
+
