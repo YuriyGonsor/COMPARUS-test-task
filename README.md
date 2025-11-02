@@ -13,8 +13,9 @@ The app is a simple user information collector from different data sources, such
 - Gradle
 
 ## Running the app
-```shell
-docker compose -f .\deploy\docker-compose.yml up --build
+Run the following command in the project root directory in bash or powershell:
+```
+docker compose -f ./deploy/docker-compose.yml up --build
 ```
 
 ## Current setup
@@ -25,9 +26,12 @@ The docker compose file contains the following services:
 - User-app
 
 Each DB has some inserted data to test the app.
+
 The oracle DB is unaccessible (Only god knows how to deploy it as container with all permissions, easy-peasy table and data creation and so on...)
 
 After the DBs are up and running, the app is accessible on port 8080.
+
+Check if all DBs, you are expected, are used for Spring application (should be present log like "ds-mysql-DB - Added connection")
 
 Check the app on http://localhost:8080/swagger-ui/index.html
 
